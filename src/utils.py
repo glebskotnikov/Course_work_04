@@ -1,9 +1,13 @@
-import json
+import operator
+from datetime import datetime
 
-from src.vacancy import Vacancy
+from classes.vacancy import Vacancy
 
 
 def instance_vacancy_hh(data):
+    """
+    Создаем список экземпляров классов с сайта Headhunter.
+    """
     vacancy_list = []
     for item in data["items"]:
         vacancy = Vacancy(item["name"],
@@ -18,10 +22,11 @@ def instance_vacancy_hh(data):
 
 
 def instance_vacancy_sj(data):
+    """
+    Создаем список экземпляров классов с сайта Superjob.
+    """
     vacancy_list = []
     for item in data["objects"]:
-        # print(json.dumps(item, indent=4, ensure_ascii=False))
-        # break
         vacancy = Vacancy(item["profession"],
                           item["link"],
                           item["payment_from"],
@@ -31,3 +36,67 @@ def instance_vacancy_sj(data):
                           item["vacancyRichText"])
         vacancy_list.append(vacancy)
     return vacancy_list
+
+
+def filter_vacancies(list_vacancies, filter_words):
+    """
+    Фильтруем список словарей по словам.
+    """
+    new_list = []
+    counter = 0
+    for item in list_vacancies:
+        for word in filter_words:
+            if item['requirement'] and item['responsibility']:
+                if word.lower() in item['requirement'].lower() or word.lower() in item['responsibility'].lower():
+                    new_list.append(item)
+                    counter += 1
+    print(f'\nКол-во вакансий после обработки фильтров: {counter}\n')
+    return new_list
+
+
+def sorted_data(list_vacancies):
+    """
+    Сортируем по дате список вакансий.
+    """
+    for item in list_vacancies:
+        if 'superjob.ru' in item['url']:
+            item['published_at'] = datetime.fromtimestamp(item['published_at'])
+            item['published_at'] = item['published_at'].strftime('%d-%m-%Y %H:%M:%S')
+            item['published_at'] = datetime.strptime(item['published_at'], '%d-%m-%Y %H:%M:%S')
+        else:
+            item['published_at'] = datetime.fromisoformat(item['published_at'])
+            item['published_at'] = item['published_at'].strftime('%d-%m-%Y %H:%M:%S')
+            item['published_at'] = datetime.strptime(item['published_at'], '%d-%m-%Y %H:%M:%S')
+    sorted_list = sorted(list_vacancies, key=operator.itemgetter('published_at'), reverse=True)
+    for item in sorted_list:
+        item['published_at'] = item['published_at'].strftime('%d-%m-%Y %H:%M:%S')
+    return sorted_list
+
+
+def instance_vacancy_sorted(data):
+    """
+    Создаем список экземпляров класса, полученные после всех сортировок и фильтров.
+    """
+    vacancy_list = []
+    for item in data:
+        vacancy = Vacancy(item["name"],
+                          item["url"],
+                          item["salary_from"],
+                          item["salary_to"],
+                          item["published_at"],
+                          item["requirement"],
+                          item["responsibility"])
+        vacancy_list.append(vacancy)
+    return vacancy_list
+
+
+def top_n_vacancies(list_vacancies, n):
+    """
+    Выводи top N вакансий.
+    """
+    counter = 1
+    for item in list_vacancies:
+        print(item)
+        counter += 1
+        if counter > n:
+            break

@@ -1,4 +1,7 @@
 class Vacancy:
+    """
+    Класс для работы с вакансиями.
+    """
     def __init__(self, name, url, salary_from, salary_to, published_at, requirement, responsibility):
         self.name = name
         self.url = url
@@ -19,7 +22,10 @@ class Vacancy:
     def __str__(self):
         return f'Профессия: {self.name},\n' \
                f'Ссылка на вакансию: {self.url},\n' \
-               f'Зарплата: от {self.salary_to} до {self.salary_from},\n' \
+               f'Зарплата: от {self.salary_from} до {self.salary_to},\n' \
                f'Дата публикации: {self.published_at},\n' \
                f'Требования: {self.requirement},\n' \
                f'Обязанности: {self.responsibility}\n'
+
+    def __gt__(self, other):
+        return self.salary_from > other.salary_from
