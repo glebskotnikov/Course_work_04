@@ -63,6 +63,7 @@ class JSONLoader(TreatVacancy):
         for item in data:
             if item['salary_from'] is None:
                 continue
-            if salary <= item['salary_from']:
-                new_list.append(item)
+            if item['currency'] == "RUR" or item['currency'] == "rub":
+                if salary <= item['salary_from']:
+                    new_list.append(item)
         return new_list

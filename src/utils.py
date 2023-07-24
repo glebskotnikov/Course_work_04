@@ -10,10 +10,13 @@ def instance_vacancy_hh(data):
     """
     vacancy_list = []
     for item in data["items"]:
-        vacancy = Vacancy(item["name"],
+        vacancy = Vacancy(item["id"],
+                          item["name"],
+                          item["area"]["name"],
                           item["alternate_url"],
                           item["salary"]["from"],
                           item["salary"]["to"],
+                          item["salary"]["currency"],
                           item["published_at"],
                           item["snippet"]["requirement"],
                           item["snippet"]["responsibility"])
@@ -27,10 +30,13 @@ def instance_vacancy_sj(data):
     """
     vacancy_list = []
     for item in data["objects"]:
-        vacancy = Vacancy(item["profession"],
+        vacancy = Vacancy(item["id"],
+                          item["profession"],
+                          item["town"]["title"],
                           item["link"],
                           item["payment_from"],
                           item["payment_to"],
+                          item["currency"],
                           item["date_published"],
                           item["candidat"],
                           item["vacancyRichText"])
@@ -79,10 +85,13 @@ def instance_vacancy_sorted(data):
     """
     vacancy_list = []
     for item in data:
-        vacancy = Vacancy(item["name"],
+        vacancy = Vacancy(item["vacancy_id"],
+                          item["name"],
+                          item["city"],
                           item["url"],
                           item["salary_from"],
                           item["salary_to"],
+                          item["currency"],
                           item["published_at"],
                           item["requirement"],
                           item["responsibility"])
@@ -92,7 +101,7 @@ def instance_vacancy_sorted(data):
 
 def top_n_vacancies(list_vacancies, n):
     """
-    Выводи top N вакансий.
+    Выводим top N вакансий.
     """
     counter = 1
     for item in list_vacancies:

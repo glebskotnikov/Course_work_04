@@ -19,6 +19,9 @@ def user_interaction():
     list_instance_vacancy_hh = instance_vacancy_hh(hh_vacancies)
     superjob_vacancies = superjob_api.get_vacancies(search_query)
     list_instance_vacancy_sj = instance_vacancy_sj(superjob_vacancies)
+    if len(list_instance_vacancy_hh) == 0 and len(list_instance_vacancy_sj) == 0:
+        print("Вакансии не найдены")
+        return
 
     # сохраняем список вакансий в json файл
     json_saver.add_vacancy(list_instance_vacancy_hh, list_instance_vacancy_sj)
@@ -26,10 +29,16 @@ def user_interaction():
     # фильтруем список вакансий по указанной зарплате
     search_salary = int(input("Введите желаемую минимальную зарплату: "))
     salary_sorted = json_loader.get_vacancies_by_salary(search_salary)
+    if len(salary_sorted) == 0:
+        print("Нет вакансий, соответствующих заданным критериям.")
+        return
 
     # фильтруем список вакансий по ключевым словам пользователя
     filter_words = input("\nВведите ключевые слова для фильтрации вакансий: ").split()
     filtered_vacancies = filter_vacancies(salary_sorted, filter_words)
+    if len(filtered_vacancies) == 0:
+        print("Нет вакансий, соответствующих заданным критериям.")
+        return
 
     #  сортируем список вакансий по дате
     sort_data = sorted_data(filtered_vacancies)
