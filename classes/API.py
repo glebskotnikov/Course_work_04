@@ -7,9 +7,6 @@ URL_SJ = 'https://api.superjob.ru/2.0/vacancies/'
 SUPERJOB_API = os.getenv('SUPERJOB_API_KEY')
 
 
-# SUPERJOB_API = os.environ.get('SUPERJOB_API_KEY')
-
-
 class VacancyAPI(ABC):
     """
     Абстрактный класс для работы с API сайтов с вакансиями.
@@ -38,7 +35,20 @@ class HeadHunterAPI(VacancyAPI):
         }
 
         response = requests.get(URL_HH, params)
-        data = response.json()
+        data = response.json()['items']
+        page_count = 1
+        if len(data) == 100:
+            while True:
+                print(f'загружаем страницу {page_count}')
+                params['page'] = page_count
+                response = requests.get(URL_HH, params)
+                new_data = response.json()['items']
+                data += new_data
+                if len(new_data) == 100:
+                    page_count += 1
+                else:
+                    break
+
         return data
 
 
@@ -57,5 +67,17 @@ class SuperJobAPI(VacancyAPI):
             'no_agreement': 1
         }
         response = requests.get(URL_SJ, headers=headers, params=params)
-        result_page = response.json()
-        return result_page
+        data = response.json()['objects']
+        page_count = 1
+        if len(data) == 100:
+            while True:
+                print(f'загружаем страницу {page_count}')
+                params['page'] = page_count
+                response = requests.get(URL_SJ, headers=headers, params=params)
+                new_data = response.json()['objects']
+                data += new_data
+                if len(new_data) == 100:
+                    page_count += 1
+                else:
+                    break
+        return data

@@ -9,7 +9,7 @@ def instance_vacancy_hh(data):
     Создаем список экземпляров классов с сайта Headhunter.
     """
     vacancy_list = []
-    for item in data["items"]:
+    for item in data:
         vacancy = Vacancy(item["id"],
                           item["name"],
                           item["area"]["name"],
@@ -29,7 +29,7 @@ def instance_vacancy_sj(data):
     Создаем список экземпляров классов с сайта Superjob.
     """
     vacancy_list = []
-    for item in data["objects"]:
+    for item in data:
         vacancy = Vacancy(item["id"],
                           item["profession"],
                           item["town"]["title"],
@@ -49,14 +49,16 @@ def filter_vacancies(list_vacancies, filter_words):
     Фильтруем список словарей по словам.
     """
     new_list = []
-    counter = 0
     for item in list_vacancies:
         for word in filter_words:
-            if item['requirement'] and item['responsibility']:
+            if word.lower() in item['name'].lower():
+                new_list.append(item)
+                break
+            elif item['requirement'] and item['responsibility']:
                 if word.lower() in item['requirement'].lower() or word.lower() in item['responsibility'].lower():
                     new_list.append(item)
-                    counter += 1
-    print(f'\nКол-во вакансий после обработки фильтров: {counter}\n')
+                    break
+    print(f'\nКол-во вакансий после обработки фильтров: {len(new_list)}\n')
     return new_list
 
 
